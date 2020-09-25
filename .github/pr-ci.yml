@@ -3,8 +3,10 @@
 
 name: Upload Python Package
 
-on: pull_request
-
+on: 
+  pull_request:
+  push:
+    branches: [ verbose_job ]
 jobs:
   deploy:
     runs-on: ubuntu-latest
