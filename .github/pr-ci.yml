@@ -1,0 +1,46 @@
+# This workflows will upload a Python Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Upload Python Package
+
+on: pull_request
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Step that prints name of pull request's base branch
+      run: |
+        echo "Pull request's TARGET_BRANCH is: ${TARGET_BRANCH}"
+        echo "Pull request's SOURCE_BRANCH is: ${SOURCE_BRANCH}"
+        echo "Pull request's PR_REPOSITORY is: ${PR_REPOSITORY}"
+      env:
+        TARGET_BRANCH: ${{ github.base_ref }}
+        SOURCE_BRANCH: ${{ github.head_ref }}
+        PR_REPOSITORY: ${{ github.repository }}
+      if: github.event_name == 'pull_request'
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd python-app/gh-action-pypi-publish-test-app
+        python setup.py sdist bdist_wheel
+    # - name: Publish
+    #   uses: sub-mod/gh-action-pypi-publish@master
+    #   with:
+    #     user: ${{ secrets.PYPI_USER }}
+    #     verify_metadata: true
+    #     skip_existing: true
+    #     verbose: true
+    #     password: ${{ secrets.PYPI_PASSWORD }}
+    #     packages_dir: python-app/gh-action-pypi-publish-test-app/dist/
+    #     repository_url: https://upload.pypi.org/legacy/
+    #   env:
+    #     LOGLEVEL: DEBUG
